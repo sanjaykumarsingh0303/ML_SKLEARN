@@ -199,7 +199,7 @@
   <header>
     <div class="wrap">
       <h1>Machine learning interview notes</h1>
-      <p>Interview answers for NumPy, pandas, and Matplotlib, with the long section on machine learning and scikit-learn 1.9. Say each answer out loud, then add your own examples underneath.</p>
+      <p>Interview answers for NumPy, pandas, Matplotlib, and scikit-learn 1.9, then statistics, SQL, deep learning, NLP, computer vision, recommenders, MLOps, behavioral answers, and coding patterns. Say each answer out loud, then add your own examples underneath.</p>
     </div>
   </header>
 
@@ -222,6 +222,16 @@
       <li><a href="#pipelines">Pipelines</a></li>
       <li><a href="#imbalance">Imbalance</a></li>
       <li><a href="#followups">Follow-ups</a></li>
+      <li class="nav-label">Also</li>
+      <li><a href="#stats">Statistics</a></li>
+      <li><a href="#sql">SQL</a></li>
+      <li><a href="#deep">Deep learning</a></li>
+      <li><a href="#nlp">NLP</a></li>
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#recommend">Recommenders</a></li>
+      <li><a href="#mlops">MLOps</a></li>
+      <li><a href="#behavioral">Behavioral</a></li>
+      <li><a href="#coding">Coding</a></li>
     </ul>
   </nav>
 
@@ -778,10 +788,426 @@
         <p>Confirm the split happened before fitting, the metric matches the decision, a simple baseline was beaten by enough to matter, and both the training and validation scores are healthy. Then look for duplicate rows and for a column that copies the target or a unique id. Either one can make any model look perfect.</p>
       </div>
     </section>
+
+    <section id="stats">
+      <h2>Statistics and probability</h2>
+      <p>These answers sit under almost every modeling discussion. Say the definition, then the mistake the interviewer is listening for.</p>
+
+      <div class="qa">
+        <h3 class="q">What is a random variable, and what are expectation and variance?</h3>
+        <p>A probability is a number from 0 to 1 attached to an event. A random variable assigns a number to an outcome. The expectation is the probability-weighted average of those numbers. The variance is the expected squared distance from that average. The standard deviation is the square root of the variance, so it is in the same units as the variable. A sample mean and a sample standard deviation are estimates of those two quantities from the rows you have.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What does the central limit theorem let you say?</h3>
+        <p>The mean of many independent draws, after you center and scale it, is approximately normal even when each draw is not. That is why a confidence interval for a mean often uses a normal or <em>t</em> critical value once the sample is reasonably large. The theorem says nothing about a single row being normal. A tiny sample, or strong dependence between rows, is outside what it buys you.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What does a confidence interval mean?</h3>
+        <p>A 95% confidence interval comes from a procedure that, repeated on new samples from the same process, covers the true parameter about 95% of the time. Once you have computed one interval, the parameter is either inside it or not. The interval is a statement about the procedure. A wider interval means a noisier estimate or a higher confidence level. A larger sample narrows it, roughly with the square root of the sample size. Report the interval next to any point estimate. A p-value alone hides the size of the effect.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is a hypothesis test, and what is a p-value?</h3>
+        <p>You state a null hypothesis, usually “no difference” or “no effect,” and a test statistic. The p-value is the probability of a statistic at least as extreme as the one you observed, if that null were true. A small p-value is evidence against the null. It is the probability of the data under the null, which is a different claim from the probability that the null is true. A large sample can make a tiny, useless difference look significant. Say the estimate and the interval, and say whether the difference is large enough to matter.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is a Type I error, a Type II error, and power?</h3>
+        <ul>
+          <li>A Type I error rejects a true null. That is a false positive. The significance level, often 0.05, is the rate of that error you are willing to accept.</li>
+          <li>A Type II error fails to reject a false null. That is a false negative.</li>
+          <li>Power is the probability you detect an effect of a size you stated in advance. More data, a larger real effect, or a looser significance level raises power.</li>
+        </ul>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Which test do you name?</h3>
+        <table>
+          <thead>
+            <tr><th>Question</th><th>A test to say out loud</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Compare the mean of one numeric outcome across two groups</td><td>Two-sample <em>t</em>-test. Welch’s version avoids assuming equal variance.</td></tr>
+            <tr><td>The same units measured twice</td><td>Paired <em>t</em>-test on the differences.</td></tr>
+            <tr><td>Two categorical columns, “are they associated?”</td><td>Chi-square test on the contingency table. Fisher’s exact test when the counts are very small.</td></tr>
+            <tr><td>One numeric outcome, three or more groups</td><td>ANOVA asks whether any mean differs. A planned comparison then says which pair.</td></tr>
+            <tr><td>Two numeric columns</td><td>Plot them first. Pearson correlation measures a linear association. Spearman measures a monotone one.</td></tr>
+          </tbody>
+        </table>
+        <p>Check the shape and the sample size before you lean on a <em>t</em>-test. Name the plot even when they asked for the test.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is Bayes’ rule in one sentence?</h3>
+        <p>The posterior is proportional to the likelihood times the prior. You update what you believed by how well it predicted the data you saw. A spam filter is the usual example: the prior is how common spam is, and the likelihood is how typical the words are under spam and under ordinary mail. The base rate matters. A rare event can produce mostly false alarms even when the detector is accurate on both classes.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you separate correlation from causation?</h3>
+        <p>Correlation is a symmetric association. A causal claim needs a reason the association is not a confounder, selection, or the arrow running the other way. Name a confounder, say what you would hold fixed, or describe the experiment you would run. Random assignment is the clean support for a causal claim. Observational data can support one under stronger assumptions, and you should say what those assumptions are.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What goes wrong when you run many tests?</h3>
+        <p>Each test at 0.05 has a 5% false-positive rate under the null. Twenty independent null tests expect about one false rejection. If you searched many features or many metrics, say so. Bonferroni divides the significance level by the number of tests. It is simple and conservative. The same instinct applies to peeking at a test set until the score looks good.</p>
+      </div>
+    </section>
+
+    <section id="sql">
+      <h2>SQL</h2>
+      <p>Interview SQL is about grain, joins, and aggregation. Say which row the answer is supposed to contain before you write the query.</p>
+
+      <div class="qa">
+        <h3 class="q">What order does a query run in?</h3>
+        <p><code>FROM</code> and <code>JOIN</code> build the row set. <code>WHERE</code> filters rows before aggregation. <code>GROUP BY</code> collapses rows. <code>HAVING</code> filters groups. <code>SELECT</code> chooses the columns. <code>ORDER BY</code> sorts. <code>LIMIT</code> cuts the result. <code>WHERE</code> cannot see an aggregate. <code>HAVING</code> can. A <code>SELECT</code> alias is available in <code>ORDER BY</code>, and it is often unavailable in <code>WHERE</code>.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Which join do you use?</h3>
+        <ul>
+          <li><code>INNER JOIN</code> keeps keys that appear on both sides.</li>
+          <li><code>LEFT JOIN</code> keeps every row from the left table and fills <code>NULL</code> when the right side has no match. Use it for “customers with no orders.”</li>
+          <li><code>FULL OUTER JOIN</code> keeps unmatched rows from both sides.</li>
+          <li>A cross join pairs every left row with every right row. It is rarely what you want unless you mean to build a grid.</li>
+        </ul>
+        <p>An inner join that was supposed to be a left join silently drops the rows the question was about.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Why did the join duplicate rows?</h3>
+        <p>The join key was not unique on one side. One customer with three orders becomes three rows. Decide the grain first: one row per customer, or one row per order. Aggregate to that grain before the join, or join and then aggregate. Count rows before and after the join when a number looks too large.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you handle <code>NULL</code>?</h3>
+        <p><code>NULL</code> means unknown. It is a different value from zero and from an empty string. <code>col = NULL</code> never matches. Use <code>IS NULL</code>. <code>COUNT(col)</code> skips nulls. <code>COUNT(*)</code> counts rows. <code>SUM</code> skips nulls. A null join key does not match, so those rows disappear from an inner join.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is a window function for?</h3>
+        <p>It computes a value across related rows and keeps every row. <code>ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY ts)</code> numbers events inside each user. <code>SUM(amount) OVER (PARTITION BY user_id ORDER BY ts)</code> is a running total. <code>LAG(amount)</code> over the same window is the previous row’s value. Reach for a window for “second purchase,” “change since yesterday,” and “top n per group.”</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you return the second highest value, including ties?</h3>
+        <p>Rank the rows and filter. <code>RANK</code> gives ties the same number and skips the next number. <code>DENSE_RANK</code> gives ties the same number and does not skip. <code>ROW_NUMBER</code> breaks ties arbitrarily, so it is the wrong tool when ties should stay together. A subquery that takes the maximum strictly below the overall maximum also works, and you should say how ties are treated.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What does an index change?</h3>
+        <p>An index lets the database find matching rows without reading the whole table. It speeds a selective filter, a join, and an ordering on that column. Writes get slower because the index has to be updated. Name an index when a query is slow and the predicate is selective. Indexing every column is a cost, not a default.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is a CTE, and how do you answer a retention question?</h3>
+        <p>A <code>WITH</code> clause names a subquery so the rest of the statement can read it. Use it to show the steps: filter activity, aggregate to user and day, then compute the rate. A retention answer is a cohort of users active on day 0, and the fraction also active on day 7. Build it at the grain of user and date, then aggregate. A self-join on user id with a seven-day gap, or a window over each user’s activity, both work. Say “distinct users,” because raw event rows would count someone twice.</p>
+      </div>
+    </section>
+
+    <section id="deep">
+      <h2>Deep learning</h2>
+      <p>Stay at the level of the training loop, the shape of the model, and how you would know it failed. Derivations are a follow-up, not the opening.</p>
+
+      <div class="qa">
+        <h3 class="q">When do you reach for a neural network?</h3>
+        <p>When the raw input is an image, audio, or a long piece of text, and you have enough labels or a pretrained model to start from. On a few thousand tabular rows, a gradient-boosted tree is usually the stronger and simpler model. Say that comparison before you describe a network.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is a layer doing?</h3>
+        <p>A dense layer computes a weighted sum of its inputs, adds a bias, and applies a nonlinearity. Without the nonlinearity, a stack of layers is still one linear function. ReLU is the usual hidden activation. A sigmoid on the last layer is a single probability, or one probability per label when labels are independent. Softmax is for classes that are mutually exclusive: the outputs are positive and sum to 1.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What do you minimize, and what is backpropagation?</h3>
+        <p>A loss. Cross-entropy for classification, squared error for regression. Training changes weights to reduce the average loss on the training set. Backpropagation applies the chain rule so each weight receives a gradient of that loss. The optimizer steps the weights in the opposite direction. You can describe that loop without writing the derivatives. If they ask, the gradient is with respect to the loss, and it flows from the output back toward the input.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is a minibatch, and what does the learning rate do?</h3>
+        <p>A minibatch is a subset of rows used for one gradient estimate. A larger batch gives a steadier estimate and uses more memory. The learning rate is the step size. Too large and the loss diverges. Too small and training crawls. Adam adapts a step size per parameter and is a common default. SGD with momentum is still what many vision recipes use once the schedule is tuned. An epoch is one pass over the training set.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you tell a network it is memorizing?</h3>
+        <p>The same gap as in classical models: training loss keeps falling while validation loss rises or stalls. The levers are more data, augmentation, weight decay, dropout, a smaller model, and early stopping. Dropout randomly zeros hidden units during training so one path cannot carry the prediction. It is off at inference. Early stopping keeps the weights from the epoch with the best validation loss. Weight decay penalizes large weights, in the same spirit as ridge.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is a vanishing gradient?</h3>
+        <p>In a deep stack, especially with sigmoids, the gradient that reaches the early layers shrinks toward zero, so those layers barely move. ReLU, careful initialization, and residual connections are the usual replies. A residual block adds the block’s input to its output, which gives the gradient a path that does not pass through every weight.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is batch normalization doing?</h3>
+        <p>It standardizes a layer’s activations using the mean and variance of the current minibatch, then learns a scale and a shift. Training is more stable, and a larger learning rate is often possible. At inference the layer uses running statistics collected during training, because a single request is not a minibatch.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is a convolution, and what is attention?</h3>
+        <p>A convolutional layer slides a small filter across the input and reuses the same weights at every position. That fits images: the same edge detector is useful in every corner, and each output sees only a local patch. Stride or pooling reduces the spatial size.</p>
+        <p>Attention lets a position look at other positions. Each token builds a query, a key, and a value. The weights are a softmax over how well the query matches the keys, and the output is a weighted sum of the values. Self-attention means the queries, keys, and values all come from the same sequence. A transformer stacks that, which is why it replaced step-by-step recurrence for most language models.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is transfer learning?</h3>
+        <p>Start from a model trained on a large related task. Train the new last layer on your labels, or train the whole network at a small learning rate. This is the default when you have hundreds or a few thousand examples rather than millions. Keep the preprocessing the pretrained model expects.</p>
+      </div>
+    </section>
+
+    <section id="nlp">
+      <h2>Natural language processing</h2>
+
+      <div class="qa">
+        <h3 class="q">How do you represent text for a classical model?</h3>
+        <p>Tokenize, then bag of words or TF-IDF, then a linear classifier. Bag of words counts tokens and ignores order. TF-IDF down-weights tokens that appear in almost every document. Say this baseline before a transformer when the task is topic classification on short documents. Character n-grams are the fallback when words are misspelled or mixed-language.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is an embedding?</h3>
+        <p>A learned vector for a token. Tokens that share contexts end up nearby. A static embedding is one vector per word type. A transformer builds a vector per token in context, so the same spelling beside different neighbors gets different vectors. The vectors are parameters, trained with the rest of the model or taken from a model someone else trained.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is tokenization in a modern model?</h3>
+        <p>Text is split into subwords from a fixed vocabulary, often byte-pair encoding or WordPiece. A rare word becomes several pieces. The model cannot emit an id outside that vocabulary. The same tokenizer has to be used when you train and when you serve. A mismatch there is a silent bug: the ids still look like integers.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">When do you say BERT, and when do you say a decoder model?</h3>
+        <p>An encoder such as BERT reads the whole span and was trained to fill in masked tokens. It is the usual start for classification, named-entity recognition, and extractive question answering. A decoder such as GPT was trained to predict the next token, and it is the usual start for generation. A sequence-to-sequence model, encoder plus decoder, fits translation and summarization. Name the task, then the family.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Do you fine-tune, prompt, or retrieve?</h3>
+        <ul>
+          <li>Fine-tuning continues training on your labeled pairs and changes weights. Use it when you have labels and need a stable, cheaper model at request time.</li>
+          <li>Prompting leaves the weights fixed and puts the instruction, and sometimes a few examples, in the input. Use it when labels are scarce or the task changes often.</li>
+          <li>Retrieval-augmented generation fetches passages and puts them in the prompt, so the answer can be tied to a source. Use it when the facts change, or when guessing from parameters is unacceptable.</li>
+        </ul>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Which metric do you report for text?</h3>
+        <p>For classification, precision, recall, and F1, often per class. For generation, BLEU and ROUGE score overlapping n-grams against a reference. They are weak proxies for whether the answer is true or useful. For a product, prefer a check that matches the decision: a required field is present, a human rating on a sample, or an exact match on a closed answer set.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What fails first with text data?</h3>
+        <p>A random split leaks when the same document, user, or template is on both sides. A label that is a keyword inside the text produces a perfect score and a model that does nothing new in production. Very common tokens dominate a bag-of-words model unless you down-weight them. Deduplicate near-copies before the split.</p>
+      </div>
+    </section>
+
+    <section id="vision">
+      <h2>Computer vision</h2>
+
+      <div class="qa">
+        <h3 class="q">How is an image an input?</h3>
+        <p>A height-by-width-by-channels array. A color photo has three channels. Values are scaled into a small range, and a pretrained model expects the same normalization it was trained with. A shape mismatch or a channel order mismatch (RGB versus BGR) is a common reason a fine-tune looks randomly initialized.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Which vision task is it?</h3>
+        <ul>
+          <li>Classification assigns one label to the image.</li>
+          <li>Object detection assigns a label and a box to each object.</li>
+          <li>Semantic segmentation assigns a label to each pixel.</li>
+          <li>Instance segmentation separates individual objects as well as labeling their pixels.</li>
+        </ul>
+        <p>Name the task before the architecture. An image-level accuracy number does not answer a detection product.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What does a CNN learn, and what is augmentation?</h3>
+        <p>Early filters respond to edges and simple patterns. Later layers see a larger region and combine those into parts. You describe that hierarchy. You rarely defend a story about one filter.</p>
+        <p>Augmentation applies label-preserving changes to training images only: crops, flips, mild color changes. It expands the training set and reduces overfitting. A horizontal flip is wrong when left and right mean different things, including text in the image and some medical findings.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you fine-tune a vision model?</h3>
+        <p>Take a backbone trained on a large classification set, replace the final layer with your number of classes, and train that layer first. If you have more labels, unfreeze later stages of the backbone at a smaller learning rate. Freeze batch-norm or keep the batches large enough that its statistics are stable. Use the backbone’s preprocessing unchanged.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you score a detector?</h3>
+        <p>Intersection over union is the overlap of the predicted box and the true box, divided by their union. A prediction counts as a true positive when the class matches and the IoU clears a threshold, often 0.5. Average precision summarizes the precision-recall curve for one class. Mean average precision averages that across classes, often over several IoU thresholds. A confidence threshold still has to be chosen for the operating point you will ship.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">The test score is high and the product is wrong. What do you check?</h3>
+        <p>The test images look like the training images, and production does not: a different camera, lighting, crop, or resolution. A rare class is being ignored by an accuracy metric. The product needs a box and you reported image-level accuracy. Resize or augmentation is cutting off the object. Look at the errors, not only the average.</p>
+      </div>
+    </section>
+
+    <section id="recommend">
+      <h2>Recommendation systems</h2>
+
+      <div class="qa">
+        <h3 class="q">What are you predicting?</h3>
+        <p>Explicit feedback is a rating the user gave. Implicit feedback is a behavior: a click, a watch, a purchase. Most product recommenders are implicit. A missing event is not a clean negative, because the user may never have been shown the item. Say how you will treat missing pairs before you name a model.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Content-based or collaborative filtering?</h3>
+        <p>Content-based scoring uses item attributes and the attributes in the user’s history. A brand-new item can be scored on day one. Collaborative filtering uses overlap in who interacted with what. It needs that overlap, and it often finds taste that attributes miss. A new user or a new item with no interactions is the cold-start problem. A hybrid uses content until interactions exist, then blends in the collaborative score.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is matrix factorization?</h3>
+        <p>Each user and each item gets a vector of latent factors. The predicted score is their dot product, plus user and item biases. You learn the vectors from observed interactions, which compresses a sparse user-by-item matrix. Similar users end up with similar vectors because they interacted with similar items. The factors are rarely a clean explanation you would show a user.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you serve a ranked list?</h3>
+        <p>A retrieval stage gathers a few hundred candidates quickly: a popularity list, an approximate nearest-neighbor index over item vectors, or a retrieval model. A ranker then orders those candidates with a richer model and fresher features. Scoring every item in the catalog with the heavy model on every request is usually too slow. Say the latency budget when you draw this.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Which metric, and what has to be beaten?</h3>
+        <p>Precision at k and recall at k, because the user sees a short list. NDCG at k rewards a relevant item higher in that list. The baseline is popularity, such as “most watched this week.” An offline win can still fail if the list is repetitive or full of items the user already knows. Confirm with an online test on the product metric: watches, purchases, or retention, not only click-through.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you split recommender data?</h3>
+        <p>By time. Train on earlier interactions and test on later ones. A random mask lets the model train on a user’s future and test on their past. If the product should not show something the user already consumed, remove those items from the candidate list at evaluation too.</p>
+      </div>
+    </section>
+
+    <section id="mlops">
+      <h2>System design and MLOps</h2>
+      <p>Open with the decision, the latency, and the cost of a mistake. The diagram comes after that.</p>
+
+      <div class="qa">
+        <h3 class="q">How do you open a design question?</h3>
+        <p>Clarify what decision the model supports, how fast the answer is needed, how many requests, and what a wrong prediction costs. Then name the label, the metric, a baseline, where training data comes from, how a prediction is served, and what you monitor. That outline is the answer they are grading. The model family is one line inside it.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Batch scoring or online scoring?</h3>
+        <p>Batch scoring writes predictions on a schedule, such as nightly churn scores into a table. Use it when the decision can wait. Online scoring runs inside the request, such as fraud at checkout. Online needs a latency budget, features that exist at request time, and a fallback when the model times out. The fallback is often a simple rule or the previous model, and you should name it.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What has to match between training and serving?</h3>
+        <p>The feature definitions, the preprocessing, and the code path where you can share it. A scikit-learn pipeline carries the scaler and encoder with the model. A common failure computes a feature from the full table in training and from a different window in production. A column that appears only after the event, such as “refund issued,” cannot be an input at decision time. This is leakage, moved into the serving path.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What do you log?</h3>
+        <p>The features the model actually saw, the score, the threshold, the model version, and the label when it arrives later. Without the inputs you cannot reproduce a bad prediction. Without the version you cannot tell a code change from a data change. Labels for fraud or churn often arrive days later, so the metric you monitor is delayed on purpose.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What is drift, and when do you retrain?</h3>
+        <p>Data drift means the inputs moved. Concept drift means the relationship between inputs and the label moved. Monitor feature distributions, the score distribution, and, once labels arrive, the metric. Retrain when that metric drops for a reason you can name, on a schedule if the world moves steadily, or both. A retrain on corrupted fresh data is worse than keeping the previous model. Keep the previous artifact so you can roll back.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you ship a new model?</h3>
+        <ul>
+          <li>Shadow: the new model scores live traffic and you only log it. The old model still decides.</li>
+          <li>Canary: a small fraction of decisions use the new model, with a fast rollback.</li>
+          <li>A/B test: users are assigned at random, you watch a product metric, and you decide with a stopping rule. Use this when the model changes what a person sees.</li>
+        </ul>
+        <p>Roll back by switching the model version. Retraining in place during an incident destroys the thing you might need to restore.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What do you keep so a run can be repeated?</h3>
+        <p>The code version, the data snapshot or the query that built it, the hyperparameters, the metrics, and the saved artifact. A weight file without the library version and the feature definition is not a reproducible run. For a classical model, save the fitted pipeline. Record the scikit-learn version beside it, and load only artifacts you trust.</p>
+      </div>
+    </section>
+
+    <section id="behavioral">
+      <h2>Behavioral questions</h2>
+      <div class="note">These are scaffolds. Put a real project in each one. A stack of model names without a decision is a weak answer.</div>
+
+      <div class="qa">
+        <h3 class="q">How do you structure the answer?</h3>
+        <p>Situation, task, action, result. One concrete project. What you personally did, separate from what the team did. A number if you have one. What changed afterward. About two minutes, then stop. Let them pull on a thread. If you cannot say what you would redo, the story is not finished.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Tell me about a project.</h3>
+        <p>Name the decision the model supported, the data you had, the baseline, the metric, and the result. Include one thing that went wrong and the check that caught it. Close with what shipped and what you left out on purpose. Interviewers trust the project more when the omission is a judgment call, such as skipping a heavier model that did not beat the baseline by enough to matter.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Tell me about a mistake.</h3>
+        <p>Pick a real one with a contained cost. State the assumption, the signal you missed, the process you changed, and how you checked the fix. A leaked feature, a metric that did not match the decision, or a split that mixed time are all fair material. A story that blames someone else, or a story where nothing broke, does not answer the question.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">You disagreed with a stakeholder. What happened?</h3>
+        <p>State their goal and yours in their words. Show the comparison you brought: a baseline against the model they asked for, or the metric they actually use to judge success. Say what you conceded. End with the decision that was made and who owned it. The point is judgment and communication, not that your model won.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">The problem was ambiguous. What did you do first?</h3>
+        <p>Narrow it. Who is the user, what decision changes, what data already exists, and what a simple baseline would score. Ship a small version and learn, when the cost of that version is low. A long study with no decision is a weaker ending than a baseline in production and a list of what you still do not know.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What are they listening for?</h3>
+        <p>Ownership, a clear sequence, comfort saying you were wrong, and a reason you chose the simpler model when it was enough. Match the detail to the role. A research interview wants the ablation. A product interview wants the decision and the measured outcome.</p>
+      </div>
+    </section>
+
+    <section id="coding">
+      <h2>Coding-interview problems</h2>
+      <p>State the input, the output, and the constraints. Give the brute force and its cost, then the improvement. Test an empty input, a single element, duplicates, and their example.</p>
+
+      <div class="qa">
+        <h3 class="q">How do you talk about complexity?</h3>
+        <p>Time is how the work grows with the input size. Space is extra memory beyond the input. A nested loop over <em>n</em> items is O(<em>n</em>²). One pass with a hash map is O(<em>n</em>) time and O(<em>n</em>) space. Sorting is O(<em>n</em> log <em>n</em>). Say both. “Faster” is incomplete until you say what you spent to get it.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Hash map: two-sum, and group anagrams</h3>
+        <p>Use a map when the question is “have I seen the counterpart already?” Two-sum stores each value’s index, and for the next value asks whether <code>target - value</code> is already there. That is one pass. Group anagrams keys each word by its sorted characters, or by a count of its letters, and appends the word to that bucket. The buckets are the groups.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Two pointers: pair sum on a sorted array</h3>
+        <p>Put one index at the start and one at the end. If the sum is too small, move the left index right. If it is too large, move the right index left. Each step throws away a whole region, so the scan is linear after the array is sorted. State whether the problem requires a pair of indices, a pair of values, or a count, and whether the same element may be used twice.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Sliding window: longest substring without a repeat</h3>
+        <p>Use a window for a contiguous subarray or substring with a constraint. Advance the right edge to grow. Advance the left edge until the window is valid again. For a substring with all unique characters, keep a map of the last index of each character, and jump the left edge past the previous copy. The answer is the maximum window length you observed.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Binary search: a sorted array, or a yes/no boundary</h3>
+        <p>Use it when the array is sorted, or when the answer space is monotonic: a property is false, then stays true. Keep the half that must contain the answer. Prefer a loop invariant you can say out loud, such as “the target is inside this closed interval,” and update the ends so the interval shrinks. The version that shows up in modeling work is searching a threshold: the smallest score cutoff that still meets a recall target.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">BFS and DFS</h3>
+        <p>BFS uses a queue and finds the shortest path in an unweighted graph, in number of edges. DFS uses a stack or recursion and is how you explore every path or flood a region, as in “number of islands” on a grid. Mark visited nodes as you enter them, or the search will loop. On a grid, the neighbors are the four adjacent cells, unless the problem includes diagonals.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Heap: top k</h3>
+        <p>A min-heap of size <em>k</em> holds the <em>k</em> largest items seen so far. Each new item costs O(log <em>k</em>), so the scan is O(<em>n</em> log <em>k</em>). Sorting the whole input is the simpler answer when <em>n</em> is small or you need a total order anyway. Say which one you are choosing and why.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Dynamic programming, the three things to say first</h3>
+        <p>Use it when a brute-force solution repeats the same subproblem while searching for an optimum or a count. Before coding, state the state, the recurrence, and the base case. Climbing stairs: the number of ways to reach step <em>i</em> is the sum of the ways to reach <em>i−1</em> and <em>i−2</em>. Coin change: the fewest coins to make amount <em>a</em> is one plus the minimum, over each coin, of the fewest coins to make <em>a</em> minus that coin. Then fill a table. If they ask for the combination rather than the count, store a predecessor as well.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What do data-science coding rounds actually ask?</h3>
+        <p>Count with <code>collections.Counter</code>. Deduplicate while keeping order. Merge overlapping intervals. Parse a list of records and aggregate in plain Python when pandas is disallowed. Implement precision, recall, or a confusion matrix from two label arrays. Talk through the empty case and the tie. If pandas is allowed, the same questions become <code>groupby</code>, a merge, and a check that the join did not multiply rows.</p>
+      </div>
+    </section>
   </main>
 
   <footer>
-    Interview notes for NumPy, pandas, Matplotlib, and machine learning. The model sections follow scikit-learn 1.9.1.
+    Interview notes for NumPy, pandas, Matplotlib, machine learning, and the broader interview set: statistics, SQL, deep learning, NLP, vision, recommenders, MLOps, behavioral answers, and coding patterns. The scikit-learn sections follow 1.9.1.
   </footer>
 </body>
 </html>
