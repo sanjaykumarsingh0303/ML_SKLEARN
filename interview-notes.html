@@ -199,7 +199,7 @@
   <header>
     <div class="wrap">
       <h1>Machine learning interview notes</h1>
-      <p>Interview answers for NumPy, pandas, Matplotlib, and scikit-learn 1.9, then statistics, SQL, deep learning, NLP, computer vision, recommenders, MLOps, behavioral answers, and coding patterns. Say each answer out loud, then add your own examples underneath.</p>
+      <p>Interview answers for NumPy, pandas, Matplotlib, and scikit-learn 1.9, then statistics, SQL, deep learning, NLP, computer vision, recommenders, MLOps, behavioral answers, and coding patterns. The automotive section turns every lab into a vehicle, a part, or a repair order. Say each answer out loud, then add your own examples underneath.</p>
     </div>
   </header>
 
@@ -223,6 +223,7 @@
       <li><a href="#imbalance">Imbalance</a></li>
       <li><a href="#followups">Follow-ups</a></li>
       <li class="nav-label">Also</li>
+      <li><a href="#automotive">Automotive</a></li>
       <li><a href="#stats">Statistics</a></li>
       <li><a href="#sql">SQL</a></li>
       <li><a href="#deep">Deep learning</a></li>
@@ -789,6 +790,67 @@
       </div>
     </section>
 
+    <section id="automotive">
+      <h2>Automotive use cases</h2>
+      <p>Each lab keeps its model. The row changes from a student or an employee to a vehicle, a part, or a repair order. In an interview, name the decision, the row, the label, and why a wrong call costs money or a retest.</p>
+
+      <div class="qa">
+        <h3 class="q">Which lab becomes which decision?</h3>
+        <table>
+          <thead>
+            <tr><th>Lab</th><th>Decision</th><th>One row</th><th>What you predict</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Linear regression, salary</td><td>Residual value</td><td>A used vehicle</td><td>Expected resale price from age and kilometers</td></tr>
+            <tr><td>Linear regression, exam score</td><td>Remaining range</td><td>One trip on an electric vehicle</td><td>Kilometers left from state of charge and battery temperature</td></tr>
+            <tr><td>Logistic regression, pass or fail</td><td>End-of-line leak test</td><td>One vehicle at the station</td><td>Pass or fail from pressure drop and dwell time</td></tr>
+            <tr><td>Logistic regression, measurements</td><td>Weld quality</td><td>One spot weld</td><td>Good or bad weld from current, voltage, and duration</td></tr>
+            <tr><td>Decision tree, pass or fail</td><td>Same leak test, readable rules</td><td>One vehicle at the station</td><td>Pass or fail. Each split is a threshold a process engineer can check.</td></tr>
+            <tr><td>Decision tree, salary</td><td>Expected repair cost</td><td>One vehicle due for service</td><td>Cost. The leaf is the average bill of similar vehicles.</td></tr>
+            <tr><td>Random forest, pass or fail</td><td>Brake service before the next visit</td><td>One vehicle</td><td>Replace the pads or leave them, from many weak sensor and usage signals</td></tr>
+            <tr><td>Random forest, salary</td><td>Residual value with more columns</td><td>One used vehicle</td><td>Price from age, kilometers, region, and number of previous owners</td></tr>
+            <tr><td>k-nearest neighbors, pass or fail</td><td>Fault lookalike</td><td>One workshop visit</td><td>The failure mode shared by the nearest past visits with the same symptom pattern</td></tr>
+            <tr><td>k-nearest neighbors, salary</td><td>Price like comparable cars</td><td>One used vehicle</td><td>The average price of the nearest vehicles of similar age and kilometers</td></tr>
+            <tr><td>SVM classification</td><td>Weld boundary</td><td>One spot weld</td><td>Good or bad, as a margin in the current-and-voltage space</td></tr>
+            <tr><td>SVM regression</td><td>Residual value with a tolerance</td><td>One used vehicle</td><td>Price. Errors smaller than a stated rupee band are ignored.</td></tr>
+            <tr><td>Gaussian naive Bayes</td><td>Bearing wear</td><td>One vibration reading</td><td>Bearing ok or bearing worn, from a single measured level</td></tr>
+            <tr><td>Bernoulli naive Bayes</td><td>Which subsystem failed</td><td>One diagnostic session</td><td>Subsystem, from which trouble codes are present, ignoring how often each code repeated</td></tr>
+            <tr><td>Multinomial naive Bayes</td><td>Complaint category</td><td>One technician note</td><td>Brake noise, infotainment, paint, and so on, from how often each word appears</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">How do you say this in an interview?</h3>
+        <p>Start from the decision, not the algorithm. “A plant needs to catch a bad weld before the body moves to the next station. One row is one weld. The label is the later tear-down or the ultrasonic check. A false pass ships a weak joint. A false fail stops the line. Logistic regression is the interpretable baseline. A tree is what I show the process engineer, because each split is a threshold on current or time.” Then name the metric: recall on bad welds if a miss is expensive, precision if a false stop is what they feel.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What does leakage look like on a vehicle?</h3>
+        <p>A column that exists only after the event you are predicting. “Parts replaced” cannot be an input to “will this visit find a brake fault.” The odometer reading from next month cannot predict this month’s failure. A random split across a vehicle’s life trains on later visits and tests on earlier ones. Split by time, or by vehicle, so the same car is not in both sets. A new model year is a new distribution. A score from last year’s fleet is not evidence about this year’s parts.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Why is accuracy a weak number here?</h3>
+        <p>Most vehicles do not fail. A model that always says “healthy” looks accurate and catches nothing. Report recall and precision on the failure class, or the precision-recall curve. Keep the split stratified. <code>class_weight="balanced"</code> and a threshold chosen for the recall the plant or the workshop needs are the levers inside scikit-learn. A missed weld and a missed brake-wear call are the rare class you actually care about.</p>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">Where do the other topics show up?</h3>
+        <ul>
+          <li>Vision on the line: a camera flags paint defects, missing clips, or a wrong badge. That is classification or detection, usually a fine-tuned network, scored with intersection over union when the output is a box.</li>
+          <li>Language: technician notes and owner complaints. Bag of words is the baseline. A transformer is the step up when the phrases get long and the categories overlap.</li>
+          <li>Recommenders: which service operation to offer, or which spare part a dealer should stock, ranked for a short list and beaten against “most replaced this month.”</li>
+          <li>MLOps: log the features seen at the station, the model version, and the later label from audit or from the workshop. A new model year is drift. Shadow the new model on the line before it can fail a vehicle.</li>
+        </ul>
+      </div>
+
+      <div class="qa">
+        <h3 class="q">What stays outside these labs?</h3>
+        <p>Brake actuation, steering, and airbag firing are certified control systems. A scikit-learn model can support inspection, maintenance timing, pricing, and complaint routing. A person or a certified controller owns the safety action. Say that boundary when the interviewer pushes the use case toward the driving task. Perception for driver assistance is a separate system, with its own data, latency budget, and safety case. It is not a drop-in replacement for these tables.</p>
+      </div>
+    </section>
+
     <section id="stats">
       <h2>Statistics and probability</h2>
       <p>These answers sit under almost every modeling discussion. Say the definition, then the mistake the interviewer is listening for.</p>
@@ -1207,7 +1269,7 @@
   </main>
 
   <footer>
-    Interview notes for NumPy, pandas, Matplotlib, machine learning, and the broader interview set: statistics, SQL, deep learning, NLP, vision, recommenders, MLOps, behavioral answers, and coding patterns. The scikit-learn sections follow 1.9.1.
+    Interview notes for NumPy, pandas, Matplotlib, machine learning, and the broader interview set: statistics, SQL, deep learning, NLP, vision, recommenders, MLOps, behavioral answers, and coding patterns. The automotive section is the domain for the seven labs. The scikit-learn sections follow 1.9.1.
   </footer>
 </body>
 </html>
