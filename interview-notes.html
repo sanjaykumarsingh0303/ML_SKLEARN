@@ -199,7 +199,7 @@
   <header>
     <div class="wrap">
       <h1>Machine learning interview notes</h1>
-      <p>Interview answers for NumPy, pandas, Matplotlib, and scikit-learn 1.9, then statistics, SQL, deep learning, NLP, computer vision, recommenders, MLOps, behavioral answers, and coding patterns. The automotive section turns every lab into a vehicle, a part, or a repair order. Say each answer out loud, then add your own examples underneath.</p>
+      <p>Interview answers for NumPy, pandas, Matplotlib, and scikit-learn 1.9, then statistics, SQL, deep learning, NLP, computer vision, recommenders, MLOps, behavioral answers, and coding patterns. Each section ends with an automotive example. The automotive section turns every lab into a vehicle, a part, or a repair order. Say each answer out loud, then add your own examples underneath.</p>
     </div>
   </header>
 
@@ -287,6 +287,7 @@
           <li><code>np.random.default_rng(seed)</code> is the current random API. Pass the seed when an interviewer asks for a repeatable split or sample.</li>
         </ul>
       </div>
+      <div class="note">Automotive. Two thousand welds, with current, voltage, and duration, are an array of shape <code>(2000, 3)</code>. <code>X.mean(axis=0)</code> is the mean of each measurement. The weld at the station now must be shape <code>(1, 3)</code> before <code>predict</code>. Subtracting the training-mean column broadcasts across the three measurements.</div>
     </section>
 
     <section id="pandas">
@@ -339,6 +340,7 @@
           <li>The train and test frames were split before any statistic was computed for imputation or scaling.</li>
         </ul>
       </div>
+      <div class="note">Automotive. Join vehicles to repair orders on <code>vehicle_id</code>, and check the row count: one vehicle with three visits becomes three rows. <code>groupby("model")["repair_cost"].mean()</code> is the average bill per model. Leave the VIN out of <code>X</code>. A missing tire pressure is a missing value, not a silent zero.</div>
     </section>
 
     <section id="matplotlib">
@@ -375,6 +377,7 @@
         <h3 class="q">How do scikit-learn plots fit on these axes?</h3>
         <p>For a model, prefer the display classes in scikit-learn. They compute the right values and draw onto a Matplotlib axes you pass in. <code>ConfusionMatrixDisplay</code>, <code>RocCurveDisplay</code>, and <code>PrecisionRecallDisplay</code> live in <code>sklearn.metrics</code>. <code>LearningCurveDisplay</code> lives in <code>sklearn.model_selection</code>. <code>from_estimator(model, X, y, ax=ax)</code> fits the drawing to a panel you already labeled. You still set the title and save the figure yourself.</p>
       </div>
+      <div class="note">Automotive. Scatter residual price against kilometers. Histogram the leak-test pressure drop. For welds, a confusion matrix separates a false pass from a false stop. Label the axes in the units a process engineer uses: amperes, rupees, kilometers.</div>
     </section>
 
     <section id="ml">
@@ -427,6 +430,7 @@
           <li>Plot the confusion matrix, the ROC or precision-recall curve, or the residuals, and say what the errors are.</li>
         </ol>
       </div>
+      <div class="note">Automotive. A good or bad weld is classification. Residual price and remaining range are regression. The baseline that always says “good weld” looks accurate and catches nothing. A random split across one vehicle’s visits trains on a later workshop visit and tests on an earlier one.</div>
     </section>
 
     <section id="sklearn">
@@ -446,6 +450,7 @@
         <h3 class="q">What is an estimator?</h3>
         <p>Any object that learns from data through <code>fit</code>. After fitting, it can <code>predict</code> or <code>transform</code>.</p>
       </div>
+      <div class="note">Automotive. End-of-line measurements, warranty tables, and residual-price tables fit in memory and belong in scikit-learn. A paint-camera model, and a model trained on images from every plant, belongs in a deep-learning library.</div>
     </section>
 
     <section id="api">
@@ -478,6 +483,7 @@
         <h3 class="q">Why does every model share this API?</h3>
         <p>So models, preprocessors, cross-validation, and pipelines can be swapped without rewriting the training loop. <code>get_params</code> and <code>set_params</code> are what <code>GridSearchCV</code> and <code>Pipeline</code> use to clone an estimator and set nested parameters.</p>
       </div>
+      <div class="note">Automotive. <code>fit</code> learns from historical welds. <code>predict</code> labels the weld at the station. <code>predict_proba</code> is the chance it is bad, which is the number you threshold when a miss and a line stop have different costs. <code>coef_</code> is the weight on current after you have said how current was scaled.</div>
     </section>
 
     <section id="leakage">
@@ -514,6 +520,7 @@
         <h3 class="q">Why set <code>random_state</code>?</h3>
         <p>So the split and any stochastic model can be reproduced. Interviews often expect you to mention it when you talk about comparing two models.</p>
       </div>
+      <div class="note">Automotive. “Parts replaced” and next month’s odometer are future columns. Hold out a later month, or hold out entire vehicles, before you fit a scaler on kilometers. Stratify the rare bad-weld label. Set <code>random_state</code> when you compare the leak-test tree with logistic regression.</div>
     </section>
 
     <section id="preprocessing">
@@ -544,6 +551,7 @@
         <h3 class="q">How do you impute missing values?</h3>
         <p><code>SimpleImputer</code> fills with the mean, median, or most frequent value learned from the training data. Put the imputer inside a pipeline so each cross-validation fold computes its own fill value. The median is the safer default for numeric features that contain outliers.</p>
       </div>
+      <div class="note">Automotive. Kilometers run into the hundred thousands and a fault flag is 0 or 1, so scale before k-nearest neighbors or a linear price model. A tree on the leak test does not need that scale. One-hot the plant, and ignore a plant code the encoder has never seen. Median-impute a missing pressure; a few failed sensors would pull a mean.</div>
     </section>
 
     <section id="models">
@@ -644,6 +652,7 @@
         <h3 class="q">When is k-nearest neighbors a weak fit?</h3>
         <p>Prediction scans neighbors, so it is slow at query time on large data. Distance is dominated by irrelevant features and by unscaled columns. It also stores the training set. It is a good baseline and a good choice when the decision really is local.</p>
       </div>
+      <div class="note">Automotive. Residual price with a readable coefficient is linear regression. A coefficient on weld current is logistic regression. The leak-test tree is the version a process engineer can read. Brake-pad replacement, from many weak usage signals, is a random forest. Pricing a car like similar cars is k-nearest neighbors. The margin between good and bad welds in current-and-voltage space is an SVM, after you scale.</div>
     </section>
 
     <section id="unsupervised">
@@ -658,6 +667,7 @@
         <h3 class="q">What is PCA for?</h3>
         <p>It finds orthogonal directions of highest variance and projects the data onto the first <code>k</code> of them. Use it to compress features, to visualize, or to remove linear correlation before a distance-based model. Scale features first, or a large-range column dominates the variance. PCA does not look at <code>y</code>. A direction with low variance can still be the one that separates classes. For supervised reduction, select features with the target, rather than keeping the top principal components only because they explain variance.</p>
       </div>
+      <div class="note">Automotive. Cluster vehicles on annual kilometers and city-versus-highway share when you are designing service plans. Scale those columns first. PCA can compress correlated vibration channels before a nearest-neighbor fault lookup. It will not, by itself, find the channel that marks a worn bearing.</div>
     </section>
 
     <section id="metrics">
@@ -691,6 +701,7 @@
           <li>R² is the fraction of variance explained relative to predicting the mean. R² of 0 matches the mean baseline. Negative R² is worse than predicting the mean.</li>
         </ul>
       </div>
+      <div class="note">Automotive. A false pass on a weld is a miss, so you report recall. A false fail stops the line, so you also report precision. Accuracy on bearings that are almost all healthy hides both. For residual price, MAE in rupees is the number a buyer understands. Use RMSE when a few large misses are the ones finance will not accept.</div>
     </section>
 
     <section id="validation">
@@ -725,6 +736,7 @@
         </ul>
         <p>A learning curve plots score against training-set size. A gap between train and validation that shrinks as data grows points to collecting more data. A gap that stays open points to simplifying the model.</p>
       </div>
+      <div class="note">Automotive. One split can put every bad weld from a single shift into the test set. Use stratified folds, then lock a later week as the test. Put the scaler on current and voltage inside the search. A tree that memorizes last year’s fleet shows a high training score and a weak score on the next model year.</div>
     </section>
 
     <section id="pipelines">
@@ -740,6 +752,7 @@
         <h3 class="q">How do you name parameters in a grid?</h3>
         <p>Use the step name, two underscores, then the parameter: <code>clf__C</code>, <code>prep__num__scaler__with_mean</code>. That double underscore is how <code>set_params</code> addresses nested estimators.</p>
       </div>
+      <div class="note">Automotive. Impute pressure, scale current and voltage, one-hot the plant, then classify the weld, as one pipeline. The station loads that object, so it uses the scaler from training. In a grid the keys look like <code>clf__C</code> and <code>clf__max_depth</code>.</div>
     </section>
 
     <section id="imbalance">
@@ -759,6 +772,7 @@
         <h3 class="q">How do you save a model?</h3>
         <p><code>skops</code> or the versioned pickle path documented by scikit-learn. Loading a pickle is equivalent to running code, so load only files you trust. Record the scikit-learn version with the file. A pipeline saved after <code>fit</code> includes the fitted scaler and encoder.</p>
       </div>
+      <div class="note">Automotive. Bad welds are the rare class. Stratify, report precision and recall, and move the threshold until the line can live with the false stops. Calibrate the score if the station acts on a probability. Save the fitted pipeline with the scikit-learn version the station will load.</div>
     </section>
 
     <section id="followups">
@@ -788,6 +802,7 @@
         <h3 class="q">What do you check before you trust a high score?</h3>
         <p>Confirm the split happened before fitting, the metric matches the decision, a simple baseline was beaten by enough to matter, and both the training and validation scores are healthy. Then look for duplicate rows and for a column that copies the target or a unique id. Either one can make any model look perfect.</p>
       </div>
+      <div class="note">Automotive. Choosing features from every plant and then cross-validating makes the weld score optimistic. A 0.01 gain that adds latency at the station is a weak reason to ship. A new trim code becomes an all-zero row unless unknown categories are ignored. A leak test that depends on a pressure threshold and on temperature is why a tree can beat logistic regression. A perfect score often means the same VIN is in both splits, or the teardown result was left in <code>X</code>.</div>
     </section>
 
     <section id="automotive">
@@ -915,6 +930,7 @@
         <h3 class="q">What goes wrong when you run many tests?</h3>
         <p>Each test at 0.05 has a 5% false-positive rate under the null. Twenty independent null tests expect about one false rejection. If you searched many features or many metrics, say so. Bonferroni divides the significance level by the number of tests. It is simple and conservative. The same instinct applies to peeking at a test set until the score looks good.</p>
       </div>
+      <div class="note">Automotive. The random variable might be the pressure drop on one vehicle, or the repair bill on one visit. Report a confidence interval on the difference in defect rate between two plants. The null is “the new weld schedule did not change the defect rate.” A Type I error stops a schedule that was fine. A Type II error keeps a schedule that ships weak joints. Mean pressure drop is a two-sample <em>t</em>-test. Complaint category against model is a chi-square. Kilometers and price move together, and age is the confounder you name. Testing every sensor at 0.05 will declare a harmless channel guilty.</div>
     </section>
 
     <section id="sql">
@@ -966,6 +982,7 @@
         <h3 class="q">What is a CTE, and how do you answer a retention question?</h3>
         <p>A <code>WITH</code> clause names a subquery so the rest of the statement can read it. Use it to show the steps: filter activity, aggregate to user and day, then compute the rate. A retention answer is a cohort of users active on day 0, and the fraction also active on day 7. Build it at the grain of user and date, then aggregate. A self-join on user id with a seven-day gap, or a window over each user’s activity, both work. Say “distinct users,” because raw event rows would count someone twice.</p>
       </div>
+      <div class="note">Automotive. Left-join vehicles to repair orders so a vehicle with no visit remains. One vehicle with three orders is three rows: decide whether the grain is the vehicle or the visit. A trouble code left <code>NULL</code> is unknown, not “no code.” <code>ROW_NUMBER() OVER (PARTITION BY vehicle_id ORDER BY visit_ts)</code> marks the second workshop visit. The repeat-repair question is the retention question: of vehicles that visited on day 0, what fraction had another visit within 30 days. Index <code>vehicle_id</code> when that join is the slow step.</div>
     </section>
 
     <section id="deep">
@@ -1017,6 +1034,7 @@
         <h3 class="q">What is transfer learning?</h3>
         <p>Start from a model trained on a large related task. Train the new last layer on your labels, or train the whole network at a small learning rate. This is the default when you have hundreds or a few thousand examples rather than millions. Keep the preprocessing the pretrained model expects.</p>
       </div>
+      <div class="note">Automotive. Paint photos and long technician notes are the reason to leave the tables. A few thousand residual-price rows stay with a tree. Softmax fits complaint categories, because a note belongs to one of them. Early stopping watches images from a later week, so the paint model does not memorize one booth’s lighting. A convolution looks for the same scratch anywhere on the panel. Attention lets a long repair note look back at the symptom named at the start. Fine-tune a vision backbone on your defect labels, and keep its preprocessing.</div>
     </section>
 
     <section id="nlp">
@@ -1060,6 +1078,7 @@
         <h3 class="q">What fails first with text data?</h3>
         <p>A random split leaks when the same document, user, or template is on both sides. A label that is a keyword inside the text produces a perfect score and a model that does nothing new in production. Very common tokens dominate a bag-of-words model unless you down-weight them. Deduplicate near-copies before the split.</p>
       </div>
+      <div class="note">Automotive. The documents are technician notes and owner complaints. TF-IDF plus logistic regression is the baseline that separates brake noise, paint, and infotainment. “Check” beside “engine” and “check” beside “please check the invoice” need different vectors. The dealer portal and the training job must share a tokenizer. An encoder classifies the note. A decoder drafts a service summary. Retrieval quotes the service manual. Judge the category, or whether the draft names the part that was replaced. The same pasted template in both splits, or the phrase “weld rejected” used as text and as label, will not survive the next plant.</div>
     </section>
 
     <section id="vision">
@@ -1101,6 +1120,7 @@
         <h3 class="q">The test score is high and the product is wrong. What do you check?</h3>
         <p>The test images look like the training images, and production does not: a different camera, lighting, crop, or resolution. A rare class is being ignored by an accuracy metric. The product needs a box and you reported image-level accuracy. Resize or augmentation is cutting off the object. Look at the errors, not only the average.</p>
       </div>
+      <div class="note">Automotive. The image is a panel at the paint booth, or a part at the clip station. Classification says defect or clean. Detection puts a box on the scratch or the missing clip. Do not flip a handed part, and do not flip a badge that contains text. Fine-tune when you have hundreds of labeled panels. Score the box with intersection over union. A high score in one booth and a miss in the next is a change of camera, light, or color.</div>
     </section>
 
     <section id="recommend">
@@ -1135,6 +1155,7 @@
         <h3 class="q">How do you split recommender data?</h3>
         <p>By time. Train on earlier interactions and test on later ones. A random mask lets the model train on a user’s future and test on their past. If the product should not show something the user already consumed, remove those items from the candidate list at evaluation too.</p>
       </div>
+      <div class="note">Automotive. The “user” is a vehicle or a dealer, and the “item” is a service job or a spare part. Installing a pad is implicit feedback. A part that was never offered is not a clean negative. A new model year has no install history, so start from the parts that fit that model. Retrieval gathers the parts that fit the VIN. A ranker orders the short list the advisor sees. Beat “most replaced this month,” split by time, and drop parts already on the vehicle when the visit should not repeat them.</div>
     </section>
 
     <section id="mlops">
@@ -1180,6 +1201,7 @@
         <h3 class="q">What do you keep so a run can be repeated?</h3>
         <p>The code version, the data snapshot or the query that built it, the hyperparameters, the metrics, and the saved artifact. A weight file without the library version and the feature definition is not a reproducible run. For a classical model, save the fitted pipeline. Record the scikit-learn version beside it, and load only artifacts you trust.</p>
       </div>
+      <div class="note">Automotive. The decision is pass or fail at the weld station, inside the cycle time of the line, and a false pass ships a weak joint. Nightly residual prices can be a batch table. The online score needs a timeout fallback: the previous model, or the station’s existing rule. Pressure has to use the same window in training and on the line. Log current, voltage, duration, the score, the threshold, and the model version. The teardown label arrives later. A new model year moves the sensors and the failure rate. Shadow the new model before it is allowed to fail a body.</div>
     </section>
 
     <section id="behavioral">
@@ -1215,6 +1237,7 @@
         <h3 class="q">What are they listening for?</h3>
         <p>Ownership, a clear sequence, comfort saying you were wrong, and a reason you chose the simpler model when it was enough. Match the detail to the role. A research interview wants the ablation. A product interview wants the decision and the measured outcome.</p>
       </div>
+      <div class="note">Automotive. If your project was a plant, a workshop, or a pricing desk, use that. For practice, the shape is the weld or the leak test: the decision, the baseline that always says pass, the recall the plant required, the false stops the line would not accept, and the heavier model you left out because the gain was smaller than the noise.</div>
     </section>
 
     <section id="coding">
@@ -1265,11 +1288,12 @@
         <h3 class="q">What do data-science coding rounds actually ask?</h3>
         <p>Count with <code>collections.Counter</code>. Deduplicate while keeping order. Merge overlapping intervals. Parse a list of records and aggregate in plain Python when pandas is disallowed. Implement precision, recall, or a confusion matrix from two label arrays. Talk through the empty case and the tie. If pandas is allowed, the same questions become <code>groupby</code>, a merge, and a check that the join did not multiply rows.</p>
       </div>
+      <div class="note">Automotive. Count trouble codes with a map. Merge overlapping workshop visits the way you merge intervals. Binary-search the weld-score threshold that still meets the recall target. A heap of size <em>k</em> holds the most expensive open repair orders. The data-science version is precision and recall on bad welds, a group-by on VIN, and a merge of vehicles to visits that you check for duplicated rows.</div>
     </section>
   </main>
 
   <footer>
-    Interview notes for NumPy, pandas, Matplotlib, machine learning, and the broader interview set: statistics, SQL, deep learning, NLP, vision, recommenders, MLOps, behavioral answers, and coding patterns. The automotive section is the domain for the seven labs. The scikit-learn sections follow 1.9.1.
+    Interview notes for NumPy, pandas, Matplotlib, machine learning, and the broader interview set. Each section ends with an automotive example, and the automotive section is the domain for the seven labs. The scikit-learn sections follow 1.9.1.
   </footer>
 </body>
 </html>
